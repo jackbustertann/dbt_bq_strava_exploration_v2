@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: stg_activities
+    description: Staging table for activities
+    columns:
+      - name: id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+  - name: stg_activity_laps
+    description: Staging table for activity laps
+    columns:
+      - name: id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+  - name: stg_activity_zones
+    description: Staging table for activity zones

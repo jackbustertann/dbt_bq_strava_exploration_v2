@@ -1,0 +1,26 @@
+version: 2
+
+sources:
+  - name: strava_dev
+    database: strava-exploration-v2
+    schema: strava_dev
+    description: 'Development BQ schema'
+    tables:
+      - name: activities
+        description: Source table for activities
+        columns:
+          - name: id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+      - name: activity_laps
+        description: Source table for activity laps
+        columns:
+          - name: id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+      - name: activity_zones
+        description: Source table for activity zones
