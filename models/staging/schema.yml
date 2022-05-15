@@ -5,12 +5,12 @@ models:
     description: Staging table for activities
     columns:
       - name: id
-        description: Activity id
+        description: Primary key
         tests:
           - unique
           - not_null
       - name: type
-        description: Activity type
+        description: '{{ doc("activity_type") }}'
         tests:
           - accepted_values:
               values:
@@ -22,12 +22,12 @@ models:
     description: Staging table for activity laps
     columns:
       - name: id
-        description: Activity lap id
+        description: Primary key
         tests:
           - unique
           - not_null
       - name: activity_id
-        description: Activity ID
+        description: Foreign key for activity.id
         tests:
           - relationships:
               to: ref('stg_activities')
@@ -36,18 +36,18 @@ models:
     description: Staging table for activity zones
     columns:
       - name: id
-        description: Activity zone id
+        description: Primary key
         tests:
           - unique
           - not_null
       - name: activity_id
-        description: Activity id
+        description: Foreign key for activity.id
         tests:
           - relationships:
               to: ref('stg_activities')
               field: id
       - name: type
-        description: Activity zone type
+        description: '{{ doc("activity_zone_type") }}'
         tests:
           - accepted_values:
               values:
