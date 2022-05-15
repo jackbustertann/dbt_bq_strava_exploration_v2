@@ -5,17 +5,52 @@ models:
     description: Staging table for activities
     columns:
       - name: id
-        description: Primary key
+        description: Activity id
         tests:
           - unique
           - not_null
+      - name: type
+        description: Activity type
+        tests:
+          - accepted_values:
+              values:
+                - Run
+                - Ride
+                - Rowing
+                - Hike
   - name: stg_activity_laps
     description: Staging table for activity laps
     columns:
       - name: id
-        description: Primary key
+        description: Activity lap id
         tests:
           - unique
           - not_null
+      - name: activity_id
+        description: Activity ID
+        tests:
+          - relationships:
+              to: ref('stg_activities')
+              field: id
   - name: stg_activity_zones
     description: Staging table for activity zones
+    columns:
+      - name: id
+        description: Activity zone id
+        tests:
+          - unique
+          - not_null
+      - name: activity_id
+        description: Activity id
+        tests:
+          - relationships:
+              to: ref('stg_activities')
+              field: id
+      - name: type
+        description: Activity zone type
+        tests:
+          - accepted_values:
+              values:
+                - power
+                - heartrate
+                - pace
