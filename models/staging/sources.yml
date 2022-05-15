@@ -7,21 +7,21 @@ sources:
     description: Development BQ schema for strava-api v2
     tables:
       - name: activities
-        description: Source table for /athlete/activities endpoint
+        description: Source table for [activities](https://developers.strava.com/docs/reference/#api-Activities-getLoggedInAthleteActivities) endpoint
         loaded_at_field: CAST(last_updated AS TIMESTAMP)
         freshness:
           warn_after: 
             count: 7
             period: day
       - name: activity_laps
-        description: Source table for /activities/{id}/laps endpoint
+        description: Source table for [activity laps](https://developers.strava.com/docs/reference/#api-Activities-getLapsByActivityId) endpoint
         loaded_at_field: CAST(last_updated AS TIMESTAMP)
         freshness:
           warn_after: 
             count: 7
             period: day
       - name: activity_zones
-        description: Source table for /activities/{id}/zones endpoint
+        description: Source table for [activity zones](https://developers.strava.com/docs/reference/#api-Activities-getZonesByActivityId) endpoint
         loaded_at_field: CAST(last_updated AS TIMESTAMP)
         freshness:
           warn_after: 
