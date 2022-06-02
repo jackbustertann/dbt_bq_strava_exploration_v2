@@ -11,6 +11,7 @@ WITH activity_zones AS (
     PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', last_updated) AS last_updated
   FROM
     {{ source('strava_dev', 'activity_zones') }}
+  {# {{ limit_dev() }} #}
 )
 
 SELECT 
