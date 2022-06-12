@@ -1,4 +1,4 @@
-{% set min_date = get_min_date(model = 'stg_activities', date_col = 'start_date') %}
+{% set min_date = get_min_date(model = 'activities', date_col = 'start_date') %}
 
 WITH all_dates AS (
 {{ dbt_utils.date_spine(
