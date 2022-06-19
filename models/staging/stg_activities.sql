@@ -52,6 +52,7 @@ WITH activities AS (
     ) AS end_lng
 
   FROM activities
+  WHERE type IN ('Run', 'Ride')
 
 )
 

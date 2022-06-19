@@ -24,7 +24,7 @@ WITH activities AS (
     SELECT DISTINCT act.type AS sport FROM activities act
 )
 
-, dates_unioned AS (
+, dates_concat AS (
 
     SELECT 
 
@@ -58,7 +58,51 @@ WITH activities AS (
 
 ---
 
-/* dimensions */
+,   run_dimensions AS (
+
+    SELECT 
+
+        id,
+
+        CASE 
+            WHEN distance < 8000 THEN 'Short'
+            WHEN distance < 16000 THEN 'Mid'
+            WHEN distance >= 16000 THEN 'Long'
+        END AS distance_type,
+        CASE 
+            WHEN REGEXP_CONTAINS(LOWER(name), r'intervals|track|yasoo') THEN 'Intervals'
+            WHEN name IN ('WU', 'WD') THEN 'WU/WD'
+            WHEN average_heartrate < 151 THEN 'Easy'
+            WHEN average_heartrate < 167 THEN 'Steady'
+            WHEN average_heartrate < 183 THEN 'Tempo'
+            WHEN average_heartrate >= 183 THEN 'Anaerobic'
+        END AS workout_type, /*/ add seed for hr zones /*/
+        REGEXP_CONTAINS(LOWER(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}') AS race_flag,
+        CASE 
+            WHEN REGEXP_CONTAINS(LOWER(name), r'pr') THEN 'Parkrun'
+            WHEN REGEXP_CONTAINS(LOWER(name), r'xcl') THEN 'XCL'
+            WHEN REGEXP_CONTAINS(LOWER(name), r'mwl') THEN 'MWL'
+            WHEN REGEXP_CONTAINS(LOWER(name), r'virtual|tt') THEN 'Time Trial'
+        END AS race_type,
+        CASE
+            WHEN ABS(distance - 1600) / 1600 < 0.05 THEN '1 mile'
+            WHEN ABS(distance - 3000) / 3000 < 0.05 THEN '3 km'
+            WHEN ABS(distance - 5000) / 5000 < 0.05 THEN '5 km'
+            WHEN ABS(distance - 8000) / 8000 < 0.05 THEN '5 miles'
+            WHEN ABS(distance - 10000) / 10000 < 0.05 THEN '10 km'
+            WHEN ABS(distance - 16000) / 16000 < 0.05 THEN '10 miles'
+            WHEN ABS(distance - 21100) / 21100 < 0.05 THEN 'Half Marathon'
+            WHEN ABS(distance - 42200) / 42200 < 0.05 THEN 'Marathon'
+        END AS race_distance, /*/ make dynamic /*/
+        REGEXP_EXTRACT(LOWER(name), r'#[0-9]') AS race_number,
+        REGEXP_EXTRACT(LOWER(name), r'[0-9]+[a-z]{2}') AS race_position,
+        REGEXP_EXTRACT(LOWER(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}') AS race_finish_time
+        /*/ add a seed for locations /*/ 
+
+    FROM {{ ref('stg_activities') }}
+    WHERE type = 'Run'
+    ORDER BY start_date DESC
+)
 
 ---
 
@@ -94,7 +138,7 @@ WITH activities AS (
         COALESCE(SUM(zn.time_in_hr_zone_{{ hr_zone }}), 0) AS time_in_hr_zone_{{ hr_zone }} {% if not loop.last %},{% endif %}
         {% endfor %}
 
-    FROM dates_unioned AS dt
+    FROM dates_concat AS dt
     LEFT JOIN activities AS act
         ON CAST(dt.date_day AS DATE) = EXTRACT(DATE FROM act.start_date)
         AND dt.sport = act.type
