@@ -5,10 +5,10 @@ WITH activities AS (
   
 )
 
-/* casting data types and defining new columns */
+/* casting data types */
 {% set date_cols = ['start_date', 'start_date_local', 'last_updated'] -%}
 
-, activities_final AS (
+, activities_casted AS (
 
   SELECT
 
@@ -52,7 +52,71 @@ WITH activities AS (
     ) AS end_lng
 
   FROM activities
-  WHERE type IN ('Run', 'Ride')
+
+)
+
+{% set race_distances = [
+    ('1 mile', 1.6),
+    ('3 km', 3),
+    ('5 km', 5),
+    ('5 miles', 8),
+    ('10 km', 10),
+    ('10 miles', 16),
+    ('Half Marathon', 21.1),
+    ('Marathon', 42.2) 
+    ]
+    %}
+
+/* creating custom run dimensions */
+, run_dimensions AS (
+
+  SELECT 
+
+      id,
+
+      CASE 
+          WHEN distance < 8000 THEN 'Short'
+          WHEN distance < 16000 THEN 'Mid'
+          WHEN distance >= 16000 THEN 'Long'
+      END AS distance_type,
+      CASE 
+          WHEN REGEXP_CONTAINS(LOWER(name), r'intervals|track|yasoo') THEN 'Intervals'
+          WHEN name IN ('WU', 'WD') THEN 'WU/WD'
+          WHEN average_heartrate < 151 THEN 'Easy'
+          WHEN average_heartrate < 167 THEN 'Steady'
+          WHEN average_heartrate < 183 THEN 'Tempo'
+          WHEN average_heartrate >= 183 THEN 'Anaerobic'
+      END AS workout_type, /*/ add seed for hr zones /*/
+      REGEXP_CONTAINS(LOWER(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}') AS race_flag,
+      CASE 
+          WHEN REGEXP_CONTAINS(LOWER(name), r'pr') THEN 'Parkrun'
+          WHEN REGEXP_CONTAINS(LOWER(name), r'xcl') THEN 'XCL'
+          WHEN REGEXP_CONTAINS(LOWER(name), r'mwl') THEN 'MWL'
+          WHEN REGEXP_CONTAINS(LOWER(name), r'virtual|tt') THEN 'Time Trial'
+      END AS race_type,
+      CASE
+      {% for i in race_distances %}
+          WHEN ABS((distance / 1000.0) - {{i[1]}}) / {{i[1]}} < 0.05 THEN '{{i[0]}}'
+      {% endfor %}
+      END AS race_distance, 
+      REGEXP_EXTRACT(LOWER(name), r'#[0-9]') AS race_number,
+      REGEXP_EXTRACT(LOWER(name), r'[0-9]+[a-z]{2}') AS race_position,
+      REGEXP_EXTRACT(LOWER(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}') AS race_finish_time
+      /*/ add a seed for locations /*/ 
+
+  FROM activities
+  WHERE type = 'Run'
+)
+
+/* joining intermediate tables */
+, activities_final AS (
+
+  SELECT 
+    ac.* EXCEPT (workout_type),
+    rd.* EXCEPT (id)
+  FROM activities_casted ac
+  LEFT JOIN run_dimensions rd
+    ON ac.id = rd.id
 
 )
 
