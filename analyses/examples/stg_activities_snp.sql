@@ -11,6 +11,6 @@
     )
 #} 
 
-select * from {{ source('strava_dev', 'activities') }}
+-- select * from {{ source('strava_dev', 'activities') }}
 
 {# endsnapshot #} 
