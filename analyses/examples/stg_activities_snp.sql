@@ -1,6 +1,6 @@
-{% snapshot snp_activities %}
+{# snapshot snp_activities #}
 
-{{
+{#
     config(
       target_database='strava-exploration-v2',
       target_schema='strava_snapshots',
@@ -9,8 +9,8 @@
       strategy='timestamp',
       updated_at='last_updated',
     )
-}}
+#} 
 
 select * from {{ source('strava_dev', 'activities') }}
 
-{% endsnapshot %}
+{# endsnapshot #} 

@@ -1,7 +1,11 @@
 {% macro get_min_date(model, date_col) %}
 
     {% set min_date_query %}
-        SELECT FORMAT_DATE('%Y-%m-%d', MIN({{ date_col }}))
+        SELECT 
+            FORMAT_TIMESTAMP(
+                '%Y-%m-%d', 
+                MIN(PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', {{date_col}}))
+                )
         FROM {{ target.project }}.{{ target.dataset }}.{{ model }}
     {% endset %}
 
