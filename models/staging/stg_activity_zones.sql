@@ -1,7 +1,7 @@
 /* setting lineage */
 WITH activity_zones AS (
 
-  SELECT * FROM {{ source('strava_dev', 'activity_zones') }}
+  SELECT * FROM {{ source('strava_prod', 'activity_zones') }}
 
 )
 
