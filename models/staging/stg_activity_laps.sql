@@ -1,7 +1,7 @@
 /* setting lineage */
 WITH activity_laps AS (
 
-  SELECT * FROM {{ source('strava_dev', 'activity_laps') }}
+  SELECT * FROM {{ source('strava_prod', 'activity_laps') }}
 
 )
 

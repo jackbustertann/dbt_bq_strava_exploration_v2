@@ -9,7 +9,7 @@ models:
         tests:
           - unique
           - not_null
-      - name: type
+      - name: sport
         description: '{{ doc("activity_type") }}'
         tests:
           - accepted_values:

@@ -1,9 +1,9 @@
 version: 2
 
 sources:
-  - name: strava_dev
+  - name: strava_prod
     database: strava-exploration-v2
-    schema: strava_dev
+    schema: strava_prod
     description: Development BQ schema for strava-api v2
     tables:
       - name: activities
