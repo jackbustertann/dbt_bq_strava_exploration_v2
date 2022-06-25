@@ -69,7 +69,7 @@ WITH activities AS (
         dt.date_quarter,
         dt.date_year,
 
-        act.type,
+        act.sport,
         act.distance_type,
         act.workout_type,
         act.race_flag,
@@ -80,24 +80,24 @@ WITH activities AS (
 
 
         COALESCE(SUM(act.distance), 0) AS total_distance,
-        COALESCE(SUM(act.moving_time), 0) AS total_moving_time,
-        COALESCE(SUM(act.elapsed_time), 0) AS total_elapsed_time,
+        ROUND(COALESCE(SUM(act.moving_time), 0) / 60, 2) AS total_moving_time,
+        ROUND(COALESCE(SUM(act.elapsed_time), 0) / 60, 2) AS total_elapsed_time,
         COALESCE(SUM(act.total_elevation_gain), 0) AS total_elevation_gain,
         COALESCE(SUM(act.kilojoules), 0) AS total_kilojoules,
         COALESCE(SUM(act.suffer_score), 0) AS total_suffer_score,
 
-        COALESCE(
+        CAST(COALESCE(
             SUM(act.average_heartrate * act.elapsed_time) / SUM(act.elapsed_time),
             0
-        ) AS weighted_avg_heartrate,
-        COALESCE(
+        ) AS INTEGER) AS weighted_avg_heartrate,
+        ROUND(COALESCE(
             SUM(act.average_speed * act.elapsed_time) / SUM(act.elapsed_time),
             0
-        ) AS weighted_avg_speed,
-        COALESCE(
+        ), 2) AS weighted_avg_speed,
+        CAST(COALESCE(
             SUM(act.average_watts * act.elapsed_time) / SUM(act.elapsed_time),
             0
-        ) AS weighted_avg_watts,
+        ) AS INTEGER) AS weighted_avg_watts,
 
         {% for hr_zone in hr_zones %}
         COALESCE(SUM(zn.time_in_hr_zone_{{ hr_zone }}), 0) AS time_in_hr_zone_{{ hr_zone }} ,
