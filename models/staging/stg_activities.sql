@@ -12,7 +12,14 @@ WITH activities AS (
 
   SELECT
 
-    * EXCEPT (start_date, start_date_local, last_updated), 
+    * EXCEPT (start_date, start_date_local, last_updated, distance, type), 
+
+    ROUND(distance / 1000, 2) AS distance,
+
+    type AS sport,
+
+    TIME(TIMESTAMP_SECONDS(elapsed_time)) AS elapsed_time_hhmmss,
+    TIME(TIMESTAMP_SECONDS(moving_time)) AS moving_time_hhmmss,
 
     {% for date_col in date_cols -%}
     PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%SZ', {{date_col}}) AS {{date_col}},
