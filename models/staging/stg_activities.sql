@@ -82,17 +82,17 @@ WITH activities AS (
       id,
 
       CASE 
-          WHEN distance < 8000 THEN 'Short'
-          WHEN distance < 16000 THEN 'Mid'
-          WHEN distance >= 16000 THEN 'Long'
+          WHEN distance < 8000 THEN '1: Short'
+          WHEN distance < 16000 THEN '2: Mid'
+          WHEN distance >= 16000 THEN '3: Long'
       END AS distance_type,
       CASE 
-          WHEN REGEXP_CONTAINS(LOWER(name), r'intervals|track|yasoo') THEN 'Intervals'
-          WHEN name IN ('WU', 'WD') THEN 'WU/WD'
-          WHEN average_heartrate < 151 THEN 'Easy'
-          WHEN average_heartrate < 167 THEN 'Steady'
-          WHEN average_heartrate < 183 THEN 'Tempo'
-          WHEN average_heartrate >= 183 THEN 'Anaerobic'
+          WHEN REGEXP_CONTAINS(LOWER(name), r'intervals|track|yasoo') THEN '4: Intervals'
+          WHEN name IN ('WU', 'WD') THEN '0: WU/WD'
+          WHEN average_heartrate < 151 THEN '1: Easy'
+          WHEN average_heartrate < 167 THEN '2: Steady'
+          WHEN average_heartrate < 183 THEN '3: Tempo'
+          WHEN average_heartrate >= 183 THEN '5: Anaerobic'
       END AS workout_type, /*/ add seed for hr zones /*/
       REGEXP_CONTAINS(LOWER(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}') AS race_flag,
       CASE 
