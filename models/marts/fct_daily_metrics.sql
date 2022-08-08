@@ -24,7 +24,8 @@ WITH activities AS (
         act.sport,
         act.distance_type,
         act.workout_type,
-        act.race_flag,
+        act.is_treadmill,
+        act.is_race,
         act.race_type,
 
         COALESCE(COUNT(DISTINCT act.id), 0) AS activity_count,
@@ -54,7 +55,7 @@ WITH activities AS (
     FROM activities AS act
     INNER JOIN dates AS dt
         ON CAST(act.start_date AS DATE) = PARSE_DATE('%Y-%m-%d', dt.date_day)
-    GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 
 )
 

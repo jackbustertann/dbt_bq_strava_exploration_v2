@@ -16,7 +16,11 @@ WITH activities AS (
 
     ROUND(distance / 1000, 2) AS distance,
 
-    type AS sport,
+    CASE 
+      WHEN type = 'VirtualRun' THEN 'Run'
+      WHEN type = 'Walk' THEN 'Hike'
+      ELSE type
+    END AS sport,
 
     TIME(TIMESTAMP_SECONDS(elapsed_time)) AS elapsed_time_hhmmss,
     TIME(TIMESTAMP_SECONDS(moving_time)) AS moving_time_hhmmss,
@@ -94,7 +98,8 @@ WITH activities AS (
           WHEN average_heartrate < 183 THEN '3: Tempo'
           WHEN average_heartrate >= 183 THEN '5: Anaerobic'
       END AS workout_type, /*/ add seed for hr zones /*/
-      REGEXP_CONTAINS(LOWER(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}') AS race_flag,
+      REGEXP_CONTAINS(LOWER(name), r'treadmill') AS is_treadmill,
+      REGEXP_CONTAINS(LOWER(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}') AS is_race,
       CASE 
           WHEN REGEXP_CONTAINS(LOWER(name), r'pr') THEN 'Parkrun'
           WHEN REGEXP_CONTAINS(LOWER(name), r'xcl') THEN 'XCL'
