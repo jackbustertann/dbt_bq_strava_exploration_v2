@@ -28,7 +28,8 @@ WITH activities AS (
         act.sport,
         act.distance_type,
         act.workout_type,
-        act.race_flag,
+        act.is_treadmill,
+        act.is_race,
         act.race_type,
 
         zn.type AS zone_type,
@@ -41,4 +42,4 @@ WITH activities AS (
         ON CAST(act.start_date AS DATE) = PARSE_DATE('%Y-%m-%d', dt.date_day)
     LEFT JOIN activity_zones AS zn
         ON act.id = zn.activity_id
-    GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+    GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
