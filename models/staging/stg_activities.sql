@@ -19,6 +19,7 @@ WITH activities AS (
     CASE 
       WHEN type = 'VirtualRun' THEN 'Run'
       WHEN type = 'Walk' THEN 'Hike'
+      WHEN type = 'VirtualRide' THEN 'Ride'
       ELSE type
     END AS sport,
 
