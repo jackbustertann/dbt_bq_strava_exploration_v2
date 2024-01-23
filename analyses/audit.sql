@@ -1,0 +1,28 @@
+-- top 10 efforts include 8 zwift races + 2 long hill climbs in lake garda (inc #1 effort)
+
+-- SELECT 
+--     MIN(grade_percent) AS min_grade_percent,
+--     AVG(grade_percent) AS avg_grade_percent,
+--     MAX(grade_percent) AS max_grade_percent,
+--     MIN(heartrate_bpm) AS min_heartrate_bpm,
+--     AVG(heartrate_bpm) AS avg_heartrate_bpm,
+--     MAX(heartrate_bpm) AS max_heartrate_bpm,
+--     MIN(power_watts) AS min_power_watts,
+--     AVG(power_watts) AS avg_power_watts,
+--     MAX(power_watts) AS max_power_watts
+-- FROM {# {{ ref('int_best_power_efforts')}} #} a
+-- JOIN {# {{ ref('stg_strava_activity_streams') }} #} b
+-- ON a.activity_id = b.activity_id
+--     AND b.elapsed_time_s >= a.start_time
+--     AND b.elapsed_time_s <= a.end_time
+-- WHERE a.activity_id = '9033614082'
+--     AND a.effort_duration_s = '1200s'
+
+-- ignore power on or before 2022-10-23 after first set-up of power meter [X]
+-- update ftp to be based on Zwift races only + backfill missing date ranges [X]
+-- some max HR's are un-realistic for older running activities -> define HR zones based on age [X]
+-- some HR best efforts are very low due to watch recording intervals -> remove from metrics [X]
+-- un-realistic/spiky HR for activity ids -> ignore HR [X]:
+    -- 1985636421, 2028511938, 2001078643, 2271688574 (un-realistic max HR)
+    -- 8169509675 (race effort with un-realistic average HR)
+    -- 3061139289, 2691579673 (avg/max ratio very low -> spiky HR line)

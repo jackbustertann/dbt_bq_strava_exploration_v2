@@ -37,8 +37,12 @@ models:
     staging:
       +materialized: view
     marts:
-      +materialized: view
+      +materialized: table
 seeds:
   dbt_bq_strava_exploration_v2:
     # Config indicated by + and applies to all files under models/example/
     +schema: strava_seeds
+
+
+vars:
+    dbt_metrics_calendar_model: date_details

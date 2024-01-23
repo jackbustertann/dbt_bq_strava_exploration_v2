@@ -1,0 +1,92 @@
+-- with
+
+--     daily_ride_metrics as (select * from {# {{ ref("daily_ride_metrics") }} #}),
+
+--     weekly_ride_metrics as (
+
+--     select 
+--         date_week,
+--         ROUND(SUM(total_moving_time_mins), 1) AS total_moving_time_mins,
+--         ROUND(SUM(outdoor_moving_time_mins), 1) AS outdoor_moving_time_mins,
+--         ROUND(SUM(total_distance_km), 1) AS total_distance_km,
+--         ROUND(SUM(outdoor_distance_km), 1) AS outdoor_distance_km,
+--         SUM(activity_count) AS total_activity_count,
+--         SUM(outdoor_activity_count) AS outdoor_activity_count,
+--         SUM(long_activity_count) AS long_activity_count,
+--         SUM(CASE WHEN total_moving_time_mins > 0 THEN 1 ELSE 0 END) AS total_activity_days_count,
+--         SUM(CASE WHEN outdoor_moving_time_mins > 0 THEN 1 ELSE 0 END) AS outdoor_activity_days_count,
+--         SUM(CASE WHEN total_moving_time_mins >= 150 OR outdoor_distance_km >= 64 THEN 1 ELSE 0 END) AS long_activity_days_count
+--     from daily_ride_metrics
+--     group by 1
+
+--     ),
+
+--     weekly_ride_metrics_with_moving_aggs as (
+--         SELECT
+--             *,
+--             AVG(long_activity_week)
+--                 OVER(ORDER BY date_week ROWS BETWEEN 5 PRECEDING AND CURRENT ROW) 
+--             AS six_week_long_activity_week_percent,
+--             AVG(long_activity_week)
+--                 OVER(ORDER BY date_week ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) 
+--             AS three_month_long_activity_week_percent,
+--             AVG(long_activity_week)
+--                 OVER(ORDER BY date_week ROWS BETWEEN 25 PRECEDING AND CURRENT ROW) 
+--             AS six_month_long_activity_week_percent,
+--             AVG(long_activity_week)
+--                 OVER(ORDER BY date_week ROWS BETWEEN 51 PRECEDING AND CURRENT ROW) 
+--             AS one_year_long_activity_week_percent,
+--         FROM (
+--             SELECT 
+--                 *,
+--                 CASE WHEN long_activity_days_count >= 1 THEN 1 ELSE 0 END AS long_activity_week,
+--                 AVG(total_moving_time_mins)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 5 PRECEDING AND CURRENT ROW) 
+--                 AS six_week_avg_moving_time_mins,
+--                 AVG(total_moving_time_mins)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) 
+--                 AS three_month_avg_moving_time_mins,
+--                 AVG(total_moving_time_mins)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 25 PRECEDING AND CURRENT ROW) 
+--                 AS six_month_avg_moving_time_mins,
+--                 AVG(total_moving_time_mins)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 51 PRECEDING AND CURRENT ROW) 
+--                 AS one_year_avg_moving_time_mins,
+--                 AVG(outdoor_distance_km)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 5 PRECEDING AND CURRENT ROW) 
+--                 AS six_week_avg_outdoor_distance_km,
+--                 AVG(outdoor_distance_km)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) 
+--                 AS three_month_avg_outdoor_distance_km,
+--                 AVG(outdoor_distance_km)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 25 PRECEDING AND CURRENT ROW) 
+--                 AS six_month_avg_outdoor_distance_km,
+--                 AVG(outdoor_distance_km)
+--                     OVER(ORDER BY date_week ROWS BETWEEN 51 PRECEDING AND CURRENT ROW) 
+--                 AS one_year_avg_outdoor_distance_km,
+--             FROM weekly_ride_metrics
+--         ) as sub_q
+--     )
+
+-- SELECT *
+-- FROM weekly_ride_metrics_with_moving_aggs
+-- ORDER BY 1 DESC
+
+
+-- SELECT
+--     -- * EXCEPT()
+--     *,
+--     MAX(total_moving_time_mins_row_number) OVER(PARTITION BY total_moving_time_mins_rank) AS total_moving_time_mins_rank_adj,
+--     MAX(total_moving_time_mins_row_number) OVER() AS total_moving_time_mins_rank_max,
+--     MAX(outdoor_distance_km_row_number) OVER(PARTITION BY outdoor_distance_km_rank) AS total_moving_time_mins_rank_adj,
+--     MAX(outdoor_distance_km_row_number) OVER() AS outdoor_distance_km_row_rank_max
+-- FROM (
+--     SELECT 
+--         *,
+--         RANK() OVER(ORDER BY total_moving_time_mins DESC) AS total_moving_time_mins_rank,
+--         ROW_NUMBER() OVER(ORDER BY total_moving_time_mins DESC) AS total_moving_time_mins_row_number,
+--         RANK() OVER(ORDER BY outdoor_distance_km DESC) AS outdoor_distance_km_rank,
+--         ROW_NUMBER() OVER(ORDER BY outdoor_distance_km DESC) AS outdoor_distance_km_row_number,
+--     FROM weekly_ride_metrics_with_moving_avgs
+-- ) as sub_q
+-- order by 1 desc

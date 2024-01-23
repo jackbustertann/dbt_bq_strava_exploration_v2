@@ -1,0 +1,5 @@
+-- select *
+-- from {# {{ ref("int_ride_activity_types") }} #}
+-- union all
+-- select *
+-- from {# {{ ref("int_run_activity_types") }} #}

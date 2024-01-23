@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_activities
+  - name: stg_strava_activities
     description: Staging table for activities
     columns:
       - name: id
@@ -9,30 +9,7 @@ models:
         tests:
           - unique
           - not_null
-      - name: sport
-        description: '{{ doc("activity_type") }}'
-        tests:
-          - accepted_values:
-              values:
-                - Run
-                - Ride
-                - Rowing
-                - Hike
-  - name: stg_activity_laps
-    description: Staging table for activity laps
-    columns:
-      - name: id
-        description: Primary key
-        tests:
-          - unique
-          - not_null
-      - name: activity_id
-        description: Foreign key for activity.id
-        tests:
-          - relationships:
-              to: ref('stg_activities')
-              field: id
-  - name: stg_activity_zones
+  - name: stg_strava_activity_zones
     description: Staging table for activity zones
     columns:
       - name: id
@@ -41,16 +18,14 @@ models:
           - unique
           - not_null
       - name: activity_id
-        description: Foreign key for activity.id
+        description: Foreign key for stg_strava_activities.id
         tests:
-          - relationships:
-              to: ref('stg_activities')
-              field: id
-      - name: type
-        description: '{{ doc("activity_zone_type") }}'
+          - not_null
+      - name: zone_type_name
+        description: '{{ doc("activity_zone_type_name") }}'
         tests:
           - accepted_values:
               values:
-                - power
-                - heartrate
-                - pace
+                - Heartrate
+                - Pace
+                - Power

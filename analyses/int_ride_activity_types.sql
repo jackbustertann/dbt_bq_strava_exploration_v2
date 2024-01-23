@@ -1,0 +1,54 @@
+-- with
+--     ride_activities as (
+--         select * from {# {{ ref("stg_strava_activities") }} #} where sport = 'Ride'
+--     ),
+--     ride_activities_subsetted as (select id, name from ride_activities),
+--     ride_activity_types as (
+--         select
+--             *,
+--             case
+--                 when regexp_contains(lower(name), r'zwift')
+--                 then 'Zwift'
+--                 when regexp_contains(lower(name), r'pyscle|digme')
+--                 then 'Spin Class'
+--                 when regexp_contains(lower(name), r'indoor')
+--                 then 'Indoor Ride'
+--                 else 'Outdoor Ride'
+--             end as activity_type
+--         from ride_activities_subsetted
+--     ),
+--     ride_activity_subtypes as (
+--         select
+--             *,
+--             case
+--                 when
+--                     activity_type = 'Zwift'
+--                     and regexp_contains(lower(name), r'race|stage|tour')
+--                 then 'Race'
+--                 when
+--                     activity_type = 'Zwift'
+--                     and regexp_contains(lower(name), r'group|pacer|partner')
+--                 then 'Group Ride'
+--                 when activity_type = 'Zwift' and regexp_contains(lower(name), r'ramp')
+--                 then 'Ramp Test'
+--                 when
+--                     activity_type = 'Zwift'
+--                     and regexp_contains(lower(name), r'wu|wd|warm up|warm down')
+--                 then 'WU/WD'
+--                 when activity_type = 'Zwift'
+--                 then 'Workout'
+--                 when
+--                     activity_type = 'Spin Class'
+--                     and regexp_contains(lower(name), r'digme')
+--                 then 'Digme'
+--                 when
+--                     activity_type = 'Spin Class'
+--                     and regexp_contains(lower(name), r'pyscle')
+--                 then 'Pyscle'
+--                 else activity_type
+--             end as activity_subtype
+--         from ride_activity_types
+--     )
+
+-- select *
+-- from ride_activity_subtypes
