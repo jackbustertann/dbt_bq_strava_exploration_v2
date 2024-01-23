@@ -1,0 +1,41 @@
+-- -- create activity stream table with full coverage
+-- -- imputing missing values with previous non-null value (b-fill)
+-- -- add flags for bfilled values
+
+-- -- observations
+-- -- outdoor rides have less coverage than zwift
+-- -- recording intervals vary up to 10s
+-- -- any recording interval gretear than 10s can assumed to be a break
+
+-- WITH activity_streams_with_full_coverage as (
+--     SELECT *
+--     FROM {# {{ ref('int_activity_streams_with_full_coverage') }} #}
+--     WHERE activity_id = '9960818644'
+-- ),
+
+-- activity_streams_with_bfill_bounds as (
+--     SELECT 
+--         *,
+--         MAX(IF(is_recorded, elapsed_time_s, NULL)) OVER(ORDER BY elapsed_time_s) AS bfill_elapsed_time_s,
+--         elapsed_time_s - MAX(IF(is_recorded, elapsed_time_s, NULL)) OVER(ORDER BY elapsed_time_s) AS bfill_delta_s
+--     FROM activity_streams_with_full_coverage
+-- ),
+
+-- activity_streams_bfilled AS (
+--     SELECT 
+--         a.activity_id,
+--         a.elapsed_time_s,
+--         a.bfill_elapsed_time_s,
+--         a.bfill_delta_s,
+--         a.is_recorded,
+--         (a.bfill_delta_s > 0 AND a.bfill_delta_s <= 1) AS is_bfilled,
+--         {%- for bfill_col in ['heartrate_bpm', 'power_watts', 'speed_kmhr', 'last_updated_date'] %}
+--         CASE 
+--             WHEN (a.bfill_delta_s > 0 AND a.bfill_delta_s <= 5) THEN b.{# {{ bfill_col }} #}
+--             ELSE a.{# {{ bfill_col }} #} 
+--         END AS {# {{ bfill_col }} #} {% if not loop.last %},{% endif %}
+--         {%- endfor %}
+--     FROM activity_streams_with_bfill_bounds a
+--     JOIN activity_streams_with_bfill_bounds b
+--     ON a.bfill_elapsed_time_s = b.elapsed_time_s AND a.activity_id = b.activity_id
+-- )

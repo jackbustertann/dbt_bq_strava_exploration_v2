@@ -1,0 +1,62 @@
+-- with
+--     run_activities as (
+--         select * from {# {{ ref("stg_strava_activities") }} #}  where sport = 'Run'
+--     ),
+--     run_activities_subsetted as (select id, name from run_activities),
+
+--     run_activity_types as (
+--         select
+--             *,
+--             case
+--                 when regexp_contains(lower(name), r'treadmill')
+--                 then 'Treadmill'
+--                 when regexp_contains(lower(name), r'virtual|tt|time trial')
+--                 then 'Time Trial'
+--                 when regexp_contains(lower(name), r'intervals|yasso|track')
+--                 then 'Intervals'
+--                 when regexp_contains(lower(name), r'wu|wd|warm up|warm down|test')
+--                 then 'WU/WD'
+--                 when regexp_contains(lower(name), r'[0-9]{0,2}:?[0-9]{1,2}:[0-9]{2}')
+--                 then 'Race'
+--                 else 'Outdoor Run'
+--             end as activity_type
+--         from run_activities_subsetted
+--     ),
+
+--     run_activity_subtypes as (
+--         select
+--             *,
+--             case
+--                 when
+--                     activity_type = 'Time Trial'
+--                     and regexp_contains(lower(name), r'track')
+--                 then 'Track'
+--                 when activity_type = 'Time Trial'
+--                 then 'Road'
+--                 when
+--                     activity_type = 'Intervals'
+--                     and regexp_contains(lower(name), r'track')
+--                 then 'Track'
+--                 when activity_type = 'Intervals'
+--                 then 'Road'
+--                 when
+--                     activity_type = 'Race'
+--                     and regexp_contains(lower(name), r'park run|pr')
+--                 then 'Park Run'
+--                 when
+--                     activity_type = 'Race'
+--                     and regexp_contains(lower(name), r'xc|cross country')
+--                 then 'XC'
+--                 when
+--                     activity_type = 'Race'
+--                     and regexp_contains(lower(name), r'mwl|mid week league')
+--                 then 'MWL'
+--                 when activity_type = 'Race'
+--                 then 'Other'
+--                 else activity_type
+--             end as activity_subtype
+--         from run_activity_types
+--     )
+
+-- select *
+-- from run_activity_subtypes
