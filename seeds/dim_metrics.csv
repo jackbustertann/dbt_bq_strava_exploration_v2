@@ -1,0 +1,8 @@
+metric_name,measure_name,unit,sport,type,aggregate
+moving_time,total_moving_time_mins,mins,ride,volume,avg
+outdoor_distance,outdoor_distance_km,km,ride,volume,avg
+outdoor_elevation_gain,outdoor_elevation_gain_m,m,ride,volume,avg
+active_days,active_day_count,count,ride,volume,avg
+outdoor_days,outdoor_day_count,count,ride,volume,avg
+long_days,long_day_count,count,ride,volume,avg
+max_outdoor_distance,max_day_outdoor_distance_km,km,ride,volume,avg
