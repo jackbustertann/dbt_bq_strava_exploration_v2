@@ -51,6 +51,10 @@ with
         from activities_source
     ),
 
+    activities_imputes AS (
+        SELECT '9423190867' AS id, 55000 AS distance_m, 1200 AS elevation_gain_m
+    ),
+
     -- rename, cast and handle nulls
     activities_staged as (
         select
@@ -100,7 +104,7 @@ with
             cast(act_case.is_indoor as boolean) as is_indoor,
             cast(act_case.has_heartrate as boolean) as has_heartrate,
             cast(act_case.has_power as boolean) as has_power,
-            cast(act_case.is_manual as boolean) as is_manual,
+            cast(IF(act_imp.id IS NOT NULL, True, act_case.is_manual) as boolean) as is_manual,
             cast(act_case.is_race as boolean) as is_race,
 
             -- dates
@@ -113,7 +117,10 @@ with
 
             -- measures (float)
             cast(
-                if(act_src.distance = 0, null, act_src.distance) as float64
+                COALESCE(
+                    act_imp.distance_m,
+                    if(act_src.distance = 0, null, act_src.distance)
+                ) as float64
             ) as distance_m,
             cast(
                 if(act_src.moving_time = 0, null, act_src.moving_time) as float64
@@ -128,8 +135,9 @@ with
                 if(act_src.total_elevation_gain = 0, null, act_src.elev_low) as float64
             ) as min_elevation_m,
             cast(
-                if(
-                    act_src.total_elevation_gain = 0, null, act_src.total_elevation_gain
+                COALESCE(
+                    act_imp.elevation_gain_m,
+                    if(act_src.total_elevation_gain = 0, null, act_src.total_elevation_gain) 
                 ) as float64
             ) as elevation_gain_m,
             cast(act_src.average_temp as float64) as average_temperature_c,
@@ -196,6 +204,7 @@ with
 
         from activities_source act_src
         join activities_cases act_case on act_src.id = act_case.id
+        LEFT JOIN activities_imputes act_imp on act_imp.id = act_case.id
         where act_case.sport in ('Run', 'Ride')
     )
 
