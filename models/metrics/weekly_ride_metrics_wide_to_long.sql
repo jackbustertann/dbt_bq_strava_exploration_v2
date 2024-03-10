@@ -11,7 +11,7 @@
 
 {%- set sql_statement -%}
     select measure_name, aggregate
-    FROM {{ ref('metric_definitions') }}
+    FROM {{ ref('dim_metrics') }}
 {%- endset -%}
 
 {%- set query_result = run_query(sql_statement) -%}
