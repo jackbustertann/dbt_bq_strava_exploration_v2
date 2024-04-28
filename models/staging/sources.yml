@@ -14,8 +14,5 @@ sources:
           warn_after: 
             count: 7
             period: day
-      - name: strava_activity_zones
-        identifier: activity_zones
-        description: Source table for [activity zones](https://developers.strava.com/docs/reference/#api-Activities-getZonesByActivityId) endpoint
       - name: strava_activity_streams
         identifier: activity_streams
